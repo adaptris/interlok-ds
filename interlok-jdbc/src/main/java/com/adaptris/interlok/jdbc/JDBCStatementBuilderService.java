@@ -34,6 +34,44 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Build a JDBC data query service using the given statement to
+ * create the necessary parameter list.
+ *
+ * Turn:
+ *
+ * <code>INSERT INTO hits (reference, message_id, id, entity_id,
+ * blocking) VALUES (%sql_metadata{string:reference,
+ * %sql_metadata{string:%uniqueId}, %sql_metadata{string:id},
+ * %sql_metadata{string:entity_id}, %sql_metadata{string:blocking});
+ * </code>
+ *
+ * into:
+ *
+ * <code><jdbc-string-statement-parameter>
+ *     <query-string>reference</query-string>
+ *     <query-type>metadata</query-type>
+ *   </jdbc-string-statement-parameter>
+ *   <jdbc-string-statement-parameter>
+ *     <query-string>message_id</query-string>
+ *     <query-type>id</query-type>
+ *   </jdbc-string-statement-parameter>
+ *   <jdbc-string-statement-parameter>
+ *     <query-string>id</query-string>
+ *     <query-type>metadata</query-type>
+ *   </jdbc-string-statement-parameter>
+ *   <jdbc-string-statement-parameter>
+ *     <query-string>entity_id</query-string>
+ *     <query-type>metadata</query-type>
+ *   </jdbc-string-statement-parameter>
+ *   <jdbc-string-statement-parameter>
+ *     <query-string>blocking</query-string>
+ *     <query-type>metadata</query-type>
+ *   </jdbc-string-statement-parameter>
+ *   <statement>INSERT INTO hits (reference, message_id, id, entity_id,
+ *   blocking) VALUES (?, ?, ? ,? ,?);</statement></code>
+ *
+ */
 @XStreamAlias("jdbc-statement-builder-service")
 @AdapterComponent
 @ComponentProfile(summary = "Do something JDBC-ish", tag = "service,jdbc")
@@ -94,6 +132,14 @@ public class JDBCStatementBuilderService extends ServiceImp
     LifecycleHelper.prepare(service);
   }
 
+  /**
+   * Build a JDBC data query service using the given statement to
+   * create the necessary parameter list.
+   *
+   * @param statement The SQL statement.
+   *
+   * @return The constructed JDBC query service.
+   */
   protected JdbcDataQueryService buildTheService(String statement) {
 
     JdbcDataQueryService service = new JdbcDataQueryService();
