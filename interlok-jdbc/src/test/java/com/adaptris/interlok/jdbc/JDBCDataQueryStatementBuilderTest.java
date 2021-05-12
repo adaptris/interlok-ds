@@ -22,6 +22,21 @@ public class JDBCDataQueryStatementBuilderTest extends JDBCStatementBuilderCase
     assertEquals(StringStatementParameter.class, parameters.getParameterByName("id").getClass());
   }
 
+  @Test
+  public void testInvalidTypes()
+  {
+    try
+    {
+      JDBCDataQueryStatementBuilderService service = new JDBCDataQueryStatementBuilderService();
+      service.setStatement("SELECT * FROM person WHERE id = %sql_invalid{invalid:id}");
+      service.initService();
+    }
+    catch (Exception e)
+    {
+      // expected
+    }
+  }
+
   private static JdbcDataQueryService getQueryService(JDBCDataQueryStatementBuilderService service) throws Exception
   {
     Class c = JDBCDataQueryStatementBuilderService.class;

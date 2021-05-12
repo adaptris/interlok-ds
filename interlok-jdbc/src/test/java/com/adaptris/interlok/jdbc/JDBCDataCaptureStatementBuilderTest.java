@@ -1,10 +1,17 @@
 package com.adaptris.interlok.jdbc;
 
+import com.adaptris.core.services.jdbc.BooleanStatementParameter;
 import com.adaptris.core.services.jdbc.DateStatementParameter;
+import com.adaptris.core.services.jdbc.DoubleStatementParameter;
+import com.adaptris.core.services.jdbc.FloatStatementParameter;
 import com.adaptris.core.services.jdbc.IntegerStatementParameter;
 import com.adaptris.core.services.jdbc.JdbcDataCaptureService;
+import com.adaptris.core.services.jdbc.LongStatementParameter;
+import com.adaptris.core.services.jdbc.ShortStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterList;
 import com.adaptris.core.services.jdbc.StringStatementParameter;
+import com.adaptris.core.services.jdbc.TimeStatementParameter;
+import com.adaptris.core.services.jdbc.TimestampStatementParameter;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -16,15 +23,32 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
   @Test
   public void testCreateService() throws Exception
   {
-    JDBCDataCaptureStatementBuilderService service = getService();
+    JDBCDataCaptureStatementBuilderService service = new JDBCDataCaptureStatementBuilderService();
+    service.setStatement("INSERT INTO everything (b, s, i, l, f, d, r, t, a, m) VALUES (" +
+            "%sql_metadata{boolean:b}, " +
+            "%sql_metadata{short:s}, " +
+            "%sql_metadata{integer:i}, " +
+            "%sql_metadata{long:l}, " +
+            "%sql_metadata{float:f}, " +
+            "%sql_metadata{double:d}, " +
+            "%sql_metadata{string:r}, " +
+            "%sql_metadata{time:t}, " +
+            "%sql_metadata{date:a}, " +
+            "%sql_metadata{timestamp:m})");
     service.initService();
 
     JdbcDataCaptureService queryService = getQueryService(service);
     StatementParameterList parameters = queryService.getStatementParameters();
-    assertEquals(StringStatementParameter.class, parameters.getParameterByName("id").getClass());
-    assertEquals(StringStatementParameter.class, parameters.getParameterByName("name").getClass());
-    assertEquals(DateStatementParameter.class, parameters.getParameterByName("dob").getClass());
-    assertEquals(IntegerStatementParameter.class, parameters.getParameterByName("age").getClass());
+    assertEquals(BooleanStatementParameter.class, parameters.getParameterByName("b").getClass());
+    assertEquals(ShortStatementParameter.class, parameters.getParameterByName("s").getClass());
+    assertEquals(IntegerStatementParameter.class, parameters.getParameterByName("i").getClass());
+    assertEquals(LongStatementParameter.class, parameters.getParameterByName("l").getClass());
+    assertEquals(FloatStatementParameter.class, parameters.getParameterByName("f").getClass());
+    assertEquals(DoubleStatementParameter.class, parameters.getParameterByName("d").getClass());
+    assertEquals(StringStatementParameter.class, parameters.getParameterByName("r").getClass());
+    assertEquals(TimeStatementParameter.class, parameters.getParameterByName("t").getClass());
+    assertEquals(DateStatementParameter.class, parameters.getParameterByName("a").getClass());
+    assertEquals(TimestampStatementParameter.class, parameters.getParameterByName("m").getClass());
   }
 
   private static JdbcDataCaptureService getQueryService(JDBCDataCaptureStatementBuilderService service) throws Exception

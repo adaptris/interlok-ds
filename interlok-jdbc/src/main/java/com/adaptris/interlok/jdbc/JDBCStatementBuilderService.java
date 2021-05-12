@@ -17,6 +17,7 @@ import com.adaptris.core.services.jdbc.StringStatementParameter;
 import com.adaptris.core.services.jdbc.TimeStatementParameter;
 import com.adaptris.core.services.jdbc.TimestampStatementParameter;
 import com.adaptris.core.services.jdbc.TypedStatementParameter;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import lombok.Getter;
 import lombok.NonNull;
@@ -87,7 +88,7 @@ public abstract class JDBCStatementBuilderService extends JdbcService
   @Override
   protected void initJdbcService() throws CoreException
   {
-    JdbcServiceWithParameters service = buildTheService(statement);
+    JdbcServiceWithParameters service = buildService(statement);
     LifecycleHelper.init(service);
   }
 
@@ -101,33 +102,40 @@ public abstract class JDBCStatementBuilderService extends JdbcService
    *
    * @return The constructed JDBC query service.
    */
-  protected JdbcServiceWithParameters buildTheService(String statement) {
-
-    StatementParameterList parameters = new StatementParameterList();
-
-    String result = statement;
-    Matcher matcher = sqlParameterResolver.matcher(statement);
-    while (matcher.matches())
+  protected JdbcServiceWithParameters buildService(String statement) throws CoreException
+  {
+    try
     {
-      String from = matcher.group(1);
-      String type = matcher.group(2);
-      String name = matcher.group(3);
+      StatementParameterList parameters = new StatementParameterList();
 
-      String toReplace = "%sql_" + from + "{" + type + ":" + name + "}";
-      result = result.replace(toReplace, "#" + name);
+      String result = statement;
+      Matcher matcher = sqlParameterResolver.matcher(statement);
+      while (matcher.matches())
+      {
+        String from = matcher.group(1);
+        String type = matcher.group(2);
+        String name = matcher.group(3);
 
-      TypedStatementParameter parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
-      parameter.setQueryString(name);
-      parameters.add(parameter);
+        String toReplace = "%sql_" + from + "{" + type + ":" + name + "}";
+        result = result.replace(toReplace, "#" + name);
 
-      matcher = sqlParameterResolver.matcher(result);
+        TypedStatementParameter parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
+        parameter.setQueryString(name);
+        parameters.add(parameter);
+
+        matcher = sqlParameterResolver.matcher(result);
+      }
+
+      JdbcServiceWithParameters service = createService(result);
+      service.setStatementParameters(parameters);
+      service.setParameterApplicator(new NamedParameterApplicator());
+      service.setConnection(getConnection());
+      return service;
     }
-
-    JdbcServiceWithParameters service = createService(result);
-    service.setStatementParameters(parameters);
-    service.setParameterApplicator(new NamedParameterApplicator());
-    service.setConnection(getConnection());
-    return service;
+    catch (Exception e)
+    {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   private static StatementParameterImpl.QueryType parseQueryType(String s)
