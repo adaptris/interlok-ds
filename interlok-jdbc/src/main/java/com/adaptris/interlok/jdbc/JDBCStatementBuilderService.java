@@ -1,21 +1,15 @@
 package com.adaptris.interlok.jdbc;
 
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
+import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.services.jdbc.BooleanStatementParameter;
-import com.adaptris.core.services.jdbc.ConfiguredSQLStatement;
 import com.adaptris.core.services.jdbc.DateStatementParameter;
 import com.adaptris.core.services.jdbc.DoubleStatementParameter;
 import com.adaptris.core.services.jdbc.FloatStatementParameter;
 import com.adaptris.core.services.jdbc.IntegerStatementParameter;
-import com.adaptris.core.services.jdbc.JdbcDataQueryService;
-import com.adaptris.core.services.jdbc.JdbcStatementParameter;
+import com.adaptris.core.services.jdbc.JdbcServiceWithParameters;
 import com.adaptris.core.services.jdbc.LongStatementParameter;
+import com.adaptris.core.services.jdbc.NamedParameterApplicator;
 import com.adaptris.core.services.jdbc.ShortStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterImpl;
 import com.adaptris.core.services.jdbc.StatementParameterList;
@@ -24,7 +18,6 @@ import com.adaptris.core.services.jdbc.TimeStatementParameter;
 import com.adaptris.core.services.jdbc.TimestampStatementParameter;
 import com.adaptris.core.services.jdbc.TypedStatementParameter;
 import com.adaptris.core.util.LifecycleHelper;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -48,35 +41,32 @@ import java.util.regex.Pattern;
  *
  * into:
  *
- * <code><jdbc-string-statement-parameter>
- *     <query-string>reference</query-string>
- *     <query-type>metadata</query-type>
- *   </jdbc-string-statement-parameter>
- *   <jdbc-string-statement-parameter>
- *     <query-string>message_id</query-string>
- *     <query-type>id</query-type>
- *   </jdbc-string-statement-parameter>
- *   <jdbc-string-statement-parameter>
- *     <query-string>id</query-string>
- *     <query-type>metadata</query-type>
- *   </jdbc-string-statement-parameter>
- *   <jdbc-string-statement-parameter>
- *     <query-string>entity_id</query-string>
- *     <query-type>metadata</query-type>
- *   </jdbc-string-statement-parameter>
- *   <jdbc-string-statement-parameter>
- *     <query-string>blocking</query-string>
- *     <query-type>metadata</query-type>
- *   </jdbc-string-statement-parameter>
- *   <statement>INSERT INTO hits (reference, message_id, id, entity_id,
- *   blocking) VALUES (?, ?, ? ,? ,?);</statement></code>
+ * <code>&lt;jdbc-string-statement-parameter&gt;
+ *     &lt;query-string&gt;reference&lt;/query-string&gt;
+ *     &lt;query-type&gt;metadata&lt;/query-type&gt;
+ *   &lt;/jdbc-string-statement-parameter&gt;
+ *   &lt;jdbc-string-statement-parameter&gt;
+ *     &lt;query-string&gt;message_id&lt;/query-string&gt;
+ *     &lt;query-type&gt;id&lt;/query-type&gt;
+ *   &lt;/jdbc-string-statement-parameter&gt;
+ *   &lt;jdbc-string-statement-parameter&gt;
+ *     &lt;query-string&gt;id&gt;/query-string&gt;
+ *     &lt;query-type&gt;metadata&lt;/query-type&gt;
+ *   &lt;/jdbc-string-statement-parameter&gt;
+ *   &lt;jdbc-string-statement-parameter&gt;
+ *     &lt;query-string&gt;entity_id&lt;/query-string&gt;
+ *     &lt;query-type&gt;metadata&lt;/query-type&gt;
+ *   &lt;/jdbc-string-statement-parameter&gt;
+ *   &lt;jdbc-string-statement-parameter&gt;
+ *     &lt;query-string&gt;blocking&lt;/query-string&gt;
+ *     &lt;query-type&gt;metadata&lt;/query-type&gt;
+ *   &lt;/jdbc-string-statement-parameter&gt;
+ *   &lt;statement&gt;INSERT INTO hits (reference, message_id, id,
+ *   entity_id, blocking) VALUES (?, ?, ? ,? ,?);&lt;/statement&gt;
+ * </code>
  *
  */
-@XStreamAlias("jdbc-statement-builder-service")
-@AdapterComponent
-@ComponentProfile(summary = "Do something JDBC-ish", tag = "service,jdbc")
-@DisplayOrder(order = { "statement" })
-public class JDBCStatementBuilderService extends ServiceImp
+public abstract class JDBCStatementBuilderService extends JdbcService
 {
   private static final String SQL_PARAMETER_REGEX = "^.*%sql_([a-z]+)\\{([a-z]+):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   private static final transient Pattern sqlParameterResolver = Pattern.compile(SQL_PARAMETER_REGEX);
@@ -94,43 +84,14 @@ public class JDBCStatementBuilderService extends ServiceImp
   @NonNull
   private String statement;
 
-  private transient JdbcDataQueryService service;
-
   @Override
-  protected void initService() throws CoreException
+  protected void initJdbcService() throws CoreException
   {
-    service = buildTheService(statement);
+    JdbcServiceWithParameters service = buildTheService(statement);
     LifecycleHelper.init(service);
   }
 
-  @Override
-  protected void closeService()
-  {
-    LifecycleHelper.close(service);
-  }
-
-  /**
-   * Apply the service to the message.
-   *
-   * @param message the <code>AdaptrisMessage</code> to process.
-   * @throws ServiceException wrapping any underlying <code>Exception</code>.
-   */
-  @Override
-  public void doService(AdaptrisMessage message) throws ServiceException
-  {
-    service.doService(message);
-  }
-
-  /**
-   * Prepare for initialisation.
-   *
-   * @throws CoreException
-   */
-  @Override
-  public void prepare() throws CoreException
-  {
-    LifecycleHelper.prepare(service);
-  }
+  protected abstract JdbcServiceWithParameters createService(String statement);
 
   /**
    * Build a JDBC data query service using the given statement to
@@ -140,41 +101,32 @@ public class JDBCStatementBuilderService extends ServiceImp
    *
    * @return The constructed JDBC query service.
    */
-  protected JdbcDataQueryService buildTheService(String statement) {
+  protected JdbcServiceWithParameters buildTheService(String statement) {
 
-    JdbcDataQueryService service = new JdbcDataQueryService();
     StatementParameterList parameters = new StatementParameterList();
 
     String result = statement;
     Matcher matcher = sqlParameterResolver.matcher(statement);
-    while (matcher.matches()) {
+    while (matcher.matches())
+    {
       String from = matcher.group(1);
       String type = matcher.group(2);
       String name = matcher.group(3);
 
-      log.debug("From = " + from);
-      log.debug("Type = " + type);
-      log.debug("Name = " + name);
-
-      TypedStatementParameter parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
-
       String toReplace = "%sql_" + from + "{" + type + ":" + name + "}";
       result = result.replace(toReplace, "#" + name);
 
+      TypedStatementParameter parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
+      parameter.setQueryString(name);
       parameters.add(parameter);
 
       matcher = sqlParameterResolver.matcher(result);
     }
 
-    for (JdbcStatementParameter parameter : parameters)
-    {
-      ((StatementParameterImpl)parameter).setQueryString(result);
-    }
-
-    ConfiguredSQLStatement statementCreator = new ConfiguredSQLStatement();
-    statementCreator.setStatement(statement);
-    service.setStatementCreator(statementCreator);
+    JdbcServiceWithParameters service = createService(result);
     service.setStatementParameters(parameters);
+    service.setParameterApplicator(new NamedParameterApplicator());
+    service.setConnection(getConnection());
     return service;
   }
 
