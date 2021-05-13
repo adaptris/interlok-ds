@@ -19,7 +19,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-data-query-statement-builder-service")
 @AdapterComponent
-@ComponentProfile(summary = "JDBC data query statement builder service", tag = "service,jdbc", since = "4.1.0")
+@ComponentProfile(summary = "JDBC data query statement builder service", tag = "jdbc,query,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
 public class JDBCDataQueryStatementBuilderService extends JDBCStatementBuilderService
 {

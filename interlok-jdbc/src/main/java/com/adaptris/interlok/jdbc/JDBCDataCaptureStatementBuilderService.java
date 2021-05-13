@@ -18,7 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jdbc-data-capture-statement-builder-service")
 @AdapterComponent
-@ComponentProfile(summary = "JDBC data capture statement builder service", tag = "service,jdbc", since = "4.1.0")
+@ComponentProfile(summary = "JDBC data capture statement builder service", tag = "jdbc,capture,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
 public class JDBCDataCaptureStatementBuilderService extends JDBCStatementBuilderService
 {
