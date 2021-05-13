@@ -66,6 +66,8 @@ import java.util.regex.Pattern;
  *   entity_id, blocking) VALUES (?, ?, ? ,? ,?);&lt;/statement&gt;
  * </code>
  *
+ * @author aanderson
+ * @since 4.1.0
  */
 public abstract class JDBCStatementBuilderService extends JdbcService
 {

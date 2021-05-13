@@ -11,9 +11,14 @@ import com.adaptris.core.services.jdbc.JdbcServiceWithParameters;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * JDBC data capture statement builder service.
+ *
+ * {@inheritDoc}.
+ */
 @XStreamAlias("jdbc-data-capture-statement-builder-service")
 @AdapterComponent
-@ComponentProfile(summary = "Do something JDBC-ish", tag = "service,jdbc")
+@ComponentProfile(summary = "JDBC data capture statement builder service", tag = "service,jdbc", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
 public class JDBCDataCaptureStatementBuilderService extends JDBCStatementBuilderService
 {
