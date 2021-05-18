@@ -15,7 +15,6 @@ public class JDBCDataQueryStatementBuilderTest extends JDBCStatementBuilderCase
   public void testCreateService() throws Exception
   {
     JDBCDataQueryStatementBuilderService service = getService();
-    service.initService();
 
     JdbcDataQueryService queryService = getQueryService(service);
     StatementParameterList parameters = queryService.getStatementParameters();
@@ -47,9 +46,17 @@ public class JDBCDataQueryStatementBuilderTest extends JDBCStatementBuilderCase
 
   protected static JDBCDataQueryStatementBuilderService getService()
   {
-    JDBCDataQueryStatementBuilderService service = new JDBCDataQueryStatementBuilderService();
-    service.setStatement("SELECT * FROM person WHERE id = %sql_payload{string:id}");
-    return service;
+    try
+    {
+      JDBCDataQueryStatementBuilderService service = new JDBCDataQueryStatementBuilderService();
+      service.setStatement("SELECT * FROM person WHERE id = %sql_payload{string:id}");
+      service.prepare();
+      return service;
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
 
   @Override

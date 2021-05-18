@@ -35,7 +35,7 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
             "%sql_metadata{time:t}, " +
             "%sql_metadata{date:a}, " +
             "%sql_metadata{timestamp:m})");
-    service.initService();
+    service.prepare();
 
     JdbcDataCaptureService queryService = getQueryService(service);
     StatementParameterList parameters = queryService.getStatementParameters();
@@ -61,13 +61,21 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
 
   protected static JDBCDataCaptureStatementBuilderService getService()
   {
-    JDBCDataCaptureStatementBuilderService service = new JDBCDataCaptureStatementBuilderService();
-    service.setStatement("INSERT INTO person (id, name, dob, age) VALUES (" +
-        "%sql_id{string:id}, " +
-        "%sql_payload{string:name}, " +
-        "%sql_metadata{date:dob}, " +
-        "%sql_metadata{integer:age})");
-    return service;
+    try
+    {
+      JDBCDataCaptureStatementBuilderService service = new JDBCDataCaptureStatementBuilderService();
+      service.setStatement("INSERT INTO person (id, name, dob, age) VALUES (" +
+              "%sql_id{string:id}, " +
+              "%sql_payload{string:name}, " +
+              "%sql_metadata{date:dob}, " +
+              "%sql_metadata{integer:age})");
+      service.prepare();
+      return service;
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
 
   @Override

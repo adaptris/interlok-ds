@@ -87,11 +87,16 @@ public abstract class JDBCStatementBuilderService extends JdbcService
   @NonNull
   private String statement;
 
+  /**
+   * Prepare for initialisation.
+   *
+   * @throws CoreException
+   */
   @Override
-  protected void initJdbcService() throws CoreException
+  public void prepareService() throws CoreException
   {
     JdbcServiceWithParameters service = buildService(statement);
-    LifecycleHelper.init(service);
+    LifecycleHelper.prepare(service);
   }
 
   protected abstract JdbcServiceWithParameters createService(String statement);
