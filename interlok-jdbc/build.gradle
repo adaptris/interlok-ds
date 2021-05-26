@@ -1,6 +1,6 @@
 ext {
-  componentName='Interlok JDBC'
-  componentDesc="Common components for interacting with JDBC data stores"
+  componentName='Interlok Storage/JDBC'
+  componentDesc="Improved services for interacting with JDBC"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -55,10 +55,10 @@ publishing {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
-        properties.appendNode("target", "3.11.1+")
+        properties.appendNode("target", "4.1+")
         properties.appendNode("tags", "data store,jdbc")
         properties.appendNode("license", "false")
-        properties.appendNode("readme", "https://github.com/adaptris/interlok-ds/raw/develop/README.md")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok-ds/raw/develop/interlok-jdbc/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok-ds")
       }
     }
