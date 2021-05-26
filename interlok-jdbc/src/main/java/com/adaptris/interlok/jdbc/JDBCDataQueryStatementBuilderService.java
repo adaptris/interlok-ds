@@ -1,6 +1,8 @@
 package com.adaptris.interlok.jdbc;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -9,8 +11,13 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.jdbc.ConfiguredSQLStatement;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.services.jdbc.JdbcServiceWithParameters;
+import com.adaptris.core.services.jdbc.NoOpResultSetTranslator;
+import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * JDBC data query statement builder service.
@@ -23,6 +30,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = { "connection", "statement" })
 public class JDBCDataQueryStatementBuilderService extends JDBCStatementBuilderService
 {
+  @AutoPopulated
+  @Getter
+  @Setter
+  @AdvancedConfig
+  private ResultSetTranslator resultSetTranslator;
+
   private transient JdbcDataQueryService service;
 
   @Override
@@ -30,6 +43,7 @@ public class JDBCDataQueryStatementBuilderService extends JDBCStatementBuilderSe
   {
     service = new JdbcDataQueryService();
     service.setStatementCreator(new ConfiguredSQLStatement(statement));
+    service.setResultSetTranslator(resultSetTranslator());
     return service;
   }
 
@@ -87,5 +101,10 @@ public class JDBCDataQueryStatementBuilderService extends JDBCStatementBuilderSe
   public void doService(AdaptrisMessage message) throws ServiceException
   {
     service.doService(message);
+  }
+
+  private ResultSetTranslator resultSetTranslator()
+  {
+    return ObjectUtils.defaultIfNull(resultSetTranslator, new NoOpResultSetTranslator());
   }
 }
