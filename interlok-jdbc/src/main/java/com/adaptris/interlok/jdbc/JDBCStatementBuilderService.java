@@ -1,6 +1,7 @@
 package com.adaptris.interlok.jdbc;
 
 import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.services.jdbc.BooleanStatementParameter;
 import com.adaptris.core.services.jdbc.DateStatementParameter;
@@ -96,6 +97,7 @@ public abstract class JDBCStatementBuilderService extends JdbcService
   public void prepareService() throws CoreException
   {
     JdbcServiceWithParameters service = buildService(statement);
+    log.trace("Wrapped Service : {}", DefaultMarshaller.getDefaultMarshaller().marshal(service));
     LifecycleHelper.prepare(service);
   }
 

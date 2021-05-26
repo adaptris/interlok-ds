@@ -5,13 +5,13 @@ import com.adaptris.core.services.jdbc.DateStatementParameter;
 import com.adaptris.core.services.jdbc.DoubleStatementParameter;
 import com.adaptris.core.services.jdbc.FloatStatementParameter;
 import com.adaptris.core.services.jdbc.IntegerStatementParameter;
-import com.adaptris.core.services.jdbc.JdbcDataCaptureService;
 import com.adaptris.core.services.jdbc.LongStatementParameter;
 import com.adaptris.core.services.jdbc.ShortStatementParameter;
 import com.adaptris.core.services.jdbc.StatementParameterList;
 import com.adaptris.core.services.jdbc.StringStatementParameter;
 import com.adaptris.core.services.jdbc.TimeStatementParameter;
 import com.adaptris.core.services.jdbc.TimestampStatementParameter;
+import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -37,7 +37,7 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
             "%sql_metadata{timestamp:m})");
     service.prepare();
 
-    JdbcDataCaptureService queryService = getQueryService(service);
+    JdbcRawDataCaptureService queryService = getQueryService(service);
     StatementParameterList parameters = queryService.getStatementParameters();
     assertEquals(BooleanStatementParameter.class, parameters.getParameterByName("b").getClass());
     assertEquals(ShortStatementParameter.class, parameters.getParameterByName("s").getClass());
@@ -51,12 +51,12 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
     assertEquals(TimestampStatementParameter.class, parameters.getParameterByName("m").getClass());
   }
 
-  private static JdbcDataCaptureService getQueryService(JDBCDataCaptureStatementBuilderService service) throws Exception
+  private static JdbcRawDataCaptureService getQueryService(JDBCDataCaptureStatementBuilderService service) throws Exception
   {
     Class c = JDBCDataCaptureStatementBuilderService.class;
     Field f = c.getDeclaredField("service");
     f.setAccessible(true);
-    return (JdbcDataCaptureService)f.get(service);
+    return (JdbcRawDataCaptureService)f.get(service);
   }
 
   protected static JDBCDataCaptureStatementBuilderService getService()

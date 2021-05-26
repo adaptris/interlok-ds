@@ -6,8 +6,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.jdbc.JdbcDataCaptureService;
 import com.adaptris.core.services.jdbc.JdbcServiceWithParameters;
+import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -22,12 +22,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = { "connection", "statement" })
 public class JDBCDataCaptureStatementBuilderService extends JDBCStatementBuilderService
 {
-  private transient JdbcDataCaptureService service;
+  private transient JdbcRawDataCaptureService service;
 
   @Override
   protected JdbcServiceWithParameters createService(String statement)
   {
-    service = new JdbcDataCaptureService();
+    service = new JdbcRawDataCaptureService();
     service.setStatement(statement);
     return service;
   }
