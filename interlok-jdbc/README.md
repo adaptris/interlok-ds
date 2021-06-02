@@ -6,7 +6,8 @@ The statement builder (both capture and query) aims to simplify the
 syntax when writing SQL statements. Part of its goals are to make
 statement-parameters redundant and thus we needed a new syntax:
 
-    INSERT INTO hits (reference, message_id, id, entity_id, blocking) VALUES (%sql_metadata{string:reference, %sql_metadata{string:%uniqueId}, %sql_metadata{string:id}, %sql_metadata{string:entity_id}, %sql_metadata{string:blocking})
+    INSERT INTO hits (reference, message_id, id, entity_id, blocking) VALUES
+    (%sql_metadata{string:reference}, %sql_metadata{string:%uniqueId}, %sql_metadata{string:id}, %sql_metadata{string:entity_id}, %sql_metadata{string:blocking})
 
 Where under the covers we actually turn that into `INSERT INTO hits
 (reference, message_id, id, entity_id, blocking) VALUES (?, ?, ? ,? ,?)`
