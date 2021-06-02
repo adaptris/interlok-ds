@@ -73,7 +73,7 @@ import java.util.regex.Pattern;
 public abstract class JDBCStatementBuilderService extends JdbcService
 {
   private static final String SQL_PARAMETER_REGEX = "^.*%sql_([a-z]+)\\{([a-z]+):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
-  private static final transient Pattern sqlParameterResolver = Pattern.compile(SQL_PARAMETER_REGEX);
+  private static final transient Pattern sqlParameterResolver = Pattern.compile(SQL_PARAMETER_REGEX, Pattern.DOTALL);
 
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
   private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ssZ");
@@ -134,6 +134,8 @@ public abstract class JDBCStatementBuilderService extends JdbcService
 
         matcher = sqlParameterResolver.matcher(result);
       }
+
+      log.trace("Converted [{}] into [{}]", statement, result);
 
       JdbcServiceWithParameters service = createService(result);
       service.setStatementParameters(parameters);
