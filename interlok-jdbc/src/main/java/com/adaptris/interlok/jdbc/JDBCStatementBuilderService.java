@@ -161,6 +161,11 @@ public abstract class JDBCStatementBuilderService extends JdbcService
     return null;
   }
 
+  /*
+   * I wonder if these types can come from the JDBC driver or the
+   * implementations of TypedStatementParameter, instead of being
+   * hardcoded here.
+   */
   private enum Type
   {
     STRING
