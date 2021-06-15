@@ -27,10 +27,10 @@ import org.apache.commons.lang3.ObjectUtils;
  *
 <pre>
 <code>
-&lt;jdbc-query-statement-builder&gt;
+&lt;jdbc-statement-service&gt;
     &lt;unique-id&gt;7b18517b-017d-4741-8b5e-9e490bff6c51&lt;/unique-id&gt;
     &lt;statement&gt;SELECT * FROM person WHERE id = %sql_payload{string:id}&lt;/statement&gt;
-&lt;/jdbc-query-statement-builder&gt;
+&lt;/jdbc-statement-service&gt;
 </code>
 </pre>
  *
@@ -60,7 +60,7 @@ import org.apache.commons.lang3.ObjectUtils;
 &lt;/jdbc-data-query-service&gt;
 </code></pre>
  */
-@XStreamAlias("jdbc-query-statement-builder")
+@XStreamAlias("jdbc-statement-service")
 @AdapterComponent
 @ComponentProfile(summary = "JDBC data query statement builder service", tag = "jdbc,query,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })

@@ -19,10 +19,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
 <pre>
 <code>
-&lt;jdbc-capture-statement-builder&gt;
+&lt;jdbc-upsert-service&gt;
     &lt;unique-id&gt;7b18517b-017d-4741-8b5e-9e490bff6c51&lt;/unique-id&gt;
     &lt;statement&gt;INSERT INTO person (id, name, dob, age) VALUES (%sql_id{string:id}, %sql_payload{string:name}, %sql_metadata{date:dob}, %sql_metadata{integer:age})&lt;/statement&gt;
-&lt;/jdbc-capture-statement-builder&gt;
+&lt;/jdbc-upsert-service&gt;
 </code>
 </pre>
  *
@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 &lt;/jdbc-raw-data-capture-service&gt;
 </code></pre>
  */
-@XStreamAlias("jdbc-capture-statement-builder")
+@XStreamAlias("jdbc-upsert-service")
 @AdapterComponent
 @ComponentProfile(summary = "JDBC data capture statement builder service", tag = "jdbc,capture,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
