@@ -18,12 +18,12 @@ import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
 
-public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCase
+public class JDBCCaptureStatementBuilderTest extends JDBCStatementBuilderCase
 {
   @Test
   public void testCreateService() throws Exception
   {
-    JDBCDataCaptureStatementBuilderService service = new JDBCDataCaptureStatementBuilderService();
+    JDBCCaptureStatementBuilder service = new JDBCCaptureStatementBuilder();
     service.setStatement("INSERT INTO everything (b, s, i, l, f, d, r, t, a, m) VALUES (" +
             "%sql_metadata{boolean:b}, " +
             "%sql_metadata{short:s}, " +
@@ -51,19 +51,19 @@ public class JDBCDataCaptureStatementBuilderTest extends JDBCStatementBuilderCas
     assertEquals(TimestampStatementParameter.class, parameters.getParameterByName("m").getClass());
   }
 
-  private static JdbcRawDataCaptureService getQueryService(JDBCDataCaptureStatementBuilderService service) throws Exception
+  private static JdbcRawDataCaptureService getQueryService(JDBCCaptureStatementBuilder service) throws Exception
   {
-    Class c = JDBCDataCaptureStatementBuilderService.class;
+    Class c = JDBCCaptureStatementBuilder.class;
     Field f = c.getDeclaredField("service");
     f.setAccessible(true);
     return (JdbcRawDataCaptureService)f.get(service);
   }
 
-  protected static JDBCDataCaptureStatementBuilderService getService()
+  protected static JDBCCaptureStatementBuilder getService()
   {
     try
     {
-      JDBCDataCaptureStatementBuilderService service = new JDBCDataCaptureStatementBuilderService();
+      JDBCCaptureStatementBuilder service = new JDBCCaptureStatementBuilder();
       service.setStatement("INSERT INTO person (id, name, dob, age) VALUES (" +
               "%sql_id{string:id}, " +
               "%sql_payload{string:name}, " +

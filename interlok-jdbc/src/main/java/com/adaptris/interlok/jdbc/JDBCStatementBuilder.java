@@ -30,47 +30,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Build a JDBC data query service using the given statement to
- * create the necessary parameter list.
- *
- * Turn:
- *
- * <code>INSERT INTO hits (reference, message_id, id, entity_id,
- * blocking) VALUES (%sql_metadata{string:reference,
- * %sql_metadata{string:%uniqueId}, %sql_metadata{string:id},
- * %sql_metadata{string:entity_id}, %sql_metadata{string:blocking});
- * </code>
- *
- * into:
- *
- * <code>&lt;jdbc-string-statement-parameter&gt;
- *     &lt;query-string&gt;reference&lt;/query-string&gt;
- *     &lt;query-type&gt;metadata&lt;/query-type&gt;
- *   &lt;/jdbc-string-statement-parameter&gt;
- *   &lt;jdbc-string-statement-parameter&gt;
- *     &lt;query-string&gt;message_id&lt;/query-string&gt;
- *     &lt;query-type&gt;id&lt;/query-type&gt;
- *   &lt;/jdbc-string-statement-parameter&gt;
- *   &lt;jdbc-string-statement-parameter&gt;
- *     &lt;query-string&gt;id&gt;/query-string&gt;
- *     &lt;query-type&gt;metadata&lt;/query-type&gt;
- *   &lt;/jdbc-string-statement-parameter&gt;
- *   &lt;jdbc-string-statement-parameter&gt;
- *     &lt;query-string&gt;entity_id&lt;/query-string&gt;
- *     &lt;query-type&gt;metadata&lt;/query-type&gt;
- *   &lt;/jdbc-string-statement-parameter&gt;
- *   &lt;jdbc-string-statement-parameter&gt;
- *     &lt;query-string&gt;blocking&lt;/query-string&gt;
- *     &lt;query-type&gt;metadata&lt;/query-type&gt;
- *   &lt;/jdbc-string-statement-parameter&gt;
- *   &lt;statement&gt;INSERT INTO hits (reference, message_id, id,
- *   entity_id, blocking) VALUES (?, ?, ? ,? ,?);&lt;/statement&gt;
- * </code>
+ * Base class for JDBC data statement builder services; turns the given
+ * statement into the necessary query/capture service with the
+ * necessary parameter list.
  *
  * @author aanderson
  * @since 4.1.0
  */
-public abstract class JDBCStatementBuilderService extends JdbcService
+public abstract class JDBCStatementBuilder extends JdbcService
 {
   private static final String SQL_PARAMETER_REGEX = "^.*%sql_([a-z]+)\\{([a-z]+):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   private static final transient Pattern sqlParameterResolver = Pattern.compile(SQL_PARAMETER_REGEX, Pattern.DOTALL);
