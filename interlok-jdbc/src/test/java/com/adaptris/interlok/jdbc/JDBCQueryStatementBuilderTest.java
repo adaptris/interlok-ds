@@ -16,11 +16,7 @@ public class JDBCQueryStatementBuilderTest extends JDBCStatementBuilderCase
   public void testCreateService() throws Exception
   {
     JDBCQueryStatementBuilder service = getService();
-
     JdbcDataQueryService queryService = getQueryService(service);
-
-    String s = new XStream().toXML(queryService);
-
     StatementParameterList parameters = queryService.getStatementParameters();
     assertEquals(StringStatementParameter.class, parameters.getParameterByName("id").getClass());
   }
