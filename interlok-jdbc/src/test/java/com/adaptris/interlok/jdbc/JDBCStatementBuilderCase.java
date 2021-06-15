@@ -30,7 +30,7 @@ public abstract class JDBCStatementBuilderCase extends JdbcServiceCase
 
     JdbcConnection connection = new JdbcConnection(PROPERTIES.getProperty(JDBC_QUERYSERVICE_URL), PROPERTIES.getProperty(JDBC_QUERYSERVICE_DRIVER));
 
-    JDBCStatementBuilderService service = JDBCDataCaptureStatementBuilderTest.getService();
+    JDBCStatementBuilder service = JDBCCaptureStatementBuilderTest.getService();
     service.setConnection(connection);
     service.initService();
 
@@ -40,7 +40,7 @@ public abstract class JDBCStatementBuilderCase extends JdbcServiceCase
 
     execute(service, message);
 
-    service = JDBCDataQueryStatementBuilderTest.getService();
+    service = JDBCQueryStatementBuilderTest.getService();
     service.setConnection(connection);
     service.initService();
 

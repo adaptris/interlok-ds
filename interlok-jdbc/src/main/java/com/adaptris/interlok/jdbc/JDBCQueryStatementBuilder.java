@@ -22,13 +22,49 @@ import org.apache.commons.lang3.ObjectUtils;
 /**
  * JDBC data query statement builder service.
  *
- * {@inheritDoc}.
+ * <p>Build a JDBC data query service using the given statement to
+ * create the necessary parameter list. It turns:</p>
+ *
+<pre>
+<code>
+&lt;jdbc-statement-service&gt;
+    &lt;unique-id&gt;7b18517b-017d-4741-8b5e-9e490bff6c51&lt;/unique-id&gt;
+    &lt;statement&gt;SELECT * FROM person WHERE id = %sql_payload{string:id}&lt;/statement&gt;
+&lt;/jdbc-statement-service&gt;
+</code>
+</pre>
+ *
+ * <p>into:</p>
+ *
+<pre><code>
+&lt;jdbc-data-query-service&gt;
+    &lt;uniqueId&gt;e99b6678-da08-4e25-810a-4d2cb59f0a44&lt;/uniqueId&gt;
+    &lt;named-parameter-applicator&gt;
+        &lt;parameterNamePrefix&gt;#&lt;/parameterNamePrefix&gt;
+        &lt;parameterNameRegex&gt;#\w*&lt;/parameterNameRegex&gt;
+    &lt;/named-parameter-applicator&gt;
+    &lt;statementParameters&gt;
+        &lt;parameters&gt;
+            &lt;jdbc-string-statement-parameter&gt;
+                &lt;name&gt;id&lt;/name&gt;
+                &lt;queryString&gt;id&lt;/queryString&gt;
+                &lt;queryType&gt;payload&lt;/queryType&gt;
+                &lt;convertNull&gt;false&lt;/convertNull&gt;
+            &lt;/jdbc-string-statement-parameter&gt;
+        &lt;/parameters&gt;
+    &lt;/statementParameters&gt;
+    &lt;jdbc-configured-sql-statement&gt;
+        &lt;statement&gt;SELECT * FROM person WHERE id = #id&lt;/statement&gt;
+    &lt;/jdbc-configured-sql-statement&gt;
+    &lt;jdbc-noop-result-set-translator/&gt;
+&lt;/jdbc-data-query-service&gt;
+</code></pre>
  */
-@XStreamAlias("jdbc-data-query-statement-builder-service")
+@XStreamAlias("jdbc-statement-service")
 @AdapterComponent
 @ComponentProfile(summary = "JDBC data query statement builder service", tag = "jdbc,query,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
-public class JDBCDataQueryStatementBuilderService extends JDBCStatementBuilderService
+public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
 {
   @AutoPopulated
   @Getter
