@@ -1,0 +1,7 @@
+junit.ConsumerCase.baseDir=@BUILD_DIR@/examples/consumers
+junit.ServiceCase.baseDir=@BUILD_DIR@/examples/services
+junit.ProducerCase.baseDir=@BUILD_DIR@/examples/producers
+junit.WorkflowCase.baseDir=@BUILD_DIR@/examples/workflows
+
+junit.jdbc.queryservice.driver=org.apache.derby.jdbc.EmbeddedDriver
+junit.jdbc.queryservice.url=jdbc:derby:memory:JDBCStatementBuilderCase;create=true
