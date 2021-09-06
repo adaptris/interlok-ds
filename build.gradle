@@ -2,9 +2,9 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-  id 'com.github.spotbugs' version '4.7.2' apply false
+  id 'com.github.spotbugs' version '4.7.3' apply false
   id "io.freefair.lombok" version "5.3.3.3" apply false
-  id 'org.owasp.dependencycheck' version '6.2.2' apply false
+  id 'org.owasp.dependencycheck' version '6.3.1' apply false
 }
 
 ext {
@@ -22,7 +22,7 @@ ext {
 
   organizationName = "Adaptris Ltd"
   slf4jVersion = '1.7.32'
-  mockitoVersion = '3.11.2'
+  mockitoVersion = '3.12.4'
 }
 
 ext.hostname = { ->
