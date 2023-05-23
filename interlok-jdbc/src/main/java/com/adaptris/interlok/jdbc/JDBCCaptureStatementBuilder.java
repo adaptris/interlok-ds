@@ -14,21 +14,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * JDBC data captuer statement builder service.
  *
- * <p>Build a JDBC data captuere service using the given statement to
- * create the necessary parameter list. It turns:</p>
+ * <p>
+ * Build a JDBC data captuere service using the given statement to create the necessary parameter list. It turns:
+ * </p>
  *
-<pre>
+ * <pre>
 <code>
 &lt;jdbc-upsert-service&gt;
     &lt;unique-id&gt;7b18517b-017d-4741-8b5e-9e490bff6c51&lt;/unique-id&gt;
     &lt;statement&gt;INSERT INTO person (id, name, dob, age) VALUES (%sql_id{string:id}, %sql_payload{string:name}, %sql_metadata{date:dob}, %sql_metadata{integer:age})&lt;/statement&gt;
 &lt;/jdbc-upsert-service&gt;
 </code>
-</pre>
+ * </pre>
  *
- * <p>into:</p>
+ * <p>
+ * into:
+ * </p>
  *
-<pre><code>
+ * <pre>
+ * <code>
 &lt;jdbc-raw-data-capture-service&gt;
     &lt;uniqueId&gt;3759673b-e2e2-4f01-a122-b59b67931a02&lt;/uniqueId&gt;
     &lt;named-parameter-applicator&gt;
@@ -66,27 +70,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     &lt;/statementParameters&gt;
     &lt;statement&gt;INSERT INTO person (id, name, dob, age) VALUES (#id, #name, #dob, #age)&lt;/statement&gt;
 &lt;/jdbc-raw-data-capture-service&gt;
-</code></pre>
+</code>
+ * </pre>
  */
 @XStreamAlias("jdbc-upsert-service")
 @AdapterComponent
 @ComponentProfile(summary = "JDBC data capture statement builder service", tag = "jdbc,capture,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
-public class JDBCCaptureStatementBuilder extends JDBCStatementBuilder
-{
+public class JDBCCaptureStatementBuilder extends JDBCStatementBuilder {
   private transient JdbcRawDataCaptureService service;
 
   @Override
-  protected JdbcServiceWithParameters createService(String statement)
-  {
+  protected JdbcServiceWithParameters createService(String statement) {
     service = new JdbcRawDataCaptureService();
     service.setStatement(statement);
     return service;
   }
 
   @Override
-  protected void initJdbcService() throws CoreException
-  {
+  protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(service);
   }
 
@@ -97,8 +99,7 @@ public class JDBCCaptureStatementBuilder extends JDBCStatementBuilder
    * </p>
    */
   @Override
-  protected void closeJdbcService()
-  {
+  protected void closeJdbcService() {
     LifecycleHelper.close(service);
   }
 
@@ -111,8 +112,7 @@ public class JDBCCaptureStatementBuilder extends JDBCStatementBuilder
    * @throws CoreException
    */
   @Override
-  protected void startService() throws CoreException
-  {
+  protected void startService() throws CoreException {
     LifecycleHelper.start(service);
   }
 
@@ -123,20 +123,21 @@ public class JDBCCaptureStatementBuilder extends JDBCStatementBuilder
    * </p>
    */
   @Override
-  protected void stopService()
-  {
+  protected void stopService() {
     LifecycleHelper.stop(service);
   }
 
   /**
    * Apply the service to the message.
    *
-   * @param message the <code>AdaptrisMessage</code> to process.
-   * @throws ServiceException wrapping any underlying <code>Exception</code>.
+   * @param message
+   *          the <code>AdaptrisMessage</code> to process.
+   * @throws ServiceException
+   *           wrapping any underlying <code>Exception</code>.
    */
   @Override
-  public void doService(AdaptrisMessage message) throws ServiceException
-  {
+  public void doService(AdaptrisMessage message) throws ServiceException {
     service.doService(message);
   }
+
 }

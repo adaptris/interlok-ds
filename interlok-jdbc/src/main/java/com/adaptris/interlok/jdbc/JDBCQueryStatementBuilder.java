@@ -1,5 +1,7 @@
 package com.adaptris.interlok.jdbc;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -15,28 +17,32 @@ import com.adaptris.core.services.jdbc.NoOpResultSetTranslator;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * JDBC data query statement builder service.
  *
- * <p>Build a JDBC data query service using the given statement to
- * create the necessary parameter list. It turns:</p>
+ * <p>
+ * Build a JDBC data query service using the given statement to create the necessary parameter list. It turns:
+ * </p>
  *
-<pre>
+ * <pre>
 <code>
 &lt;jdbc-statement-service&gt;
     &lt;unique-id&gt;7b18517b-017d-4741-8b5e-9e490bff6c51&lt;/unique-id&gt;
     &lt;statement&gt;SELECT * FROM person WHERE id = %sql_payload{string:id}&lt;/statement&gt;
 &lt;/jdbc-statement-service&gt;
 </code>
-</pre>
+ * </pre>
  *
- * <p>into:</p>
+ * <p>
+ * into:
+ * </p>
  *
-<pre><code>
+ * <pre>
+ * <code>
 &lt;jdbc-data-query-service&gt;
     &lt;uniqueId&gt;e99b6678-da08-4e25-810a-4d2cb59f0a44&lt;/uniqueId&gt;
     &lt;named-parameter-applicator&gt;
@@ -58,14 +64,14 @@ import org.apache.commons.lang3.ObjectUtils;
     &lt;/jdbc-configured-sql-statement&gt;
     &lt;jdbc-noop-result-set-translator/&gt;
 &lt;/jdbc-data-query-service&gt;
-</code></pre>
+</code>
+ * </pre>
  */
 @XStreamAlias("jdbc-statement-service")
 @AdapterComponent
 @ComponentProfile(summary = "JDBC data query statement builder service", tag = "jdbc,query,build,statement", since = "4.1.0")
 @DisplayOrder(order = { "connection", "statement" })
-public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
-{
+public class JDBCQueryStatementBuilder extends JDBCStatementBuilder {
   @AutoPopulated
   @Getter
   @Setter
@@ -75,8 +81,7 @@ public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
   private transient JdbcDataQueryService service;
 
   @Override
-  protected JdbcServiceWithParameters createService(String statement)
-  {
+  protected JdbcServiceWithParameters createService(String statement) {
     service = new JdbcDataQueryService();
     service.setStatementCreator(new ConfiguredSQLStatement(statement));
     service.setResultSetTranslator(resultSetTranslator());
@@ -84,8 +89,7 @@ public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
   }
 
   @Override
-  protected void initJdbcService() throws CoreException
-  {
+  protected void initJdbcService() throws CoreException {
     LifecycleHelper.init(service);
   }
 
@@ -96,8 +100,7 @@ public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
    * </p>
    */
   @Override
-  protected void closeJdbcService()
-  {
+  protected void closeJdbcService() {
     LifecycleHelper.close(service);
   }
 
@@ -110,8 +113,7 @@ public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
    * @throws CoreException
    */
   @Override
-  protected void startService() throws CoreException
-  {
+  protected void startService() throws CoreException {
     LifecycleHelper.start(service);
   }
 
@@ -122,25 +124,25 @@ public class JDBCQueryStatementBuilder extends JDBCStatementBuilder
    * </p>
    */
   @Override
-  protected void stopService()
-  {
+  protected void stopService() {
     LifecycleHelper.stop(service);
   }
 
   /**
    * Apply the service to the message.
    *
-   * @param message the <code>AdaptrisMessage</code> to process.
-   * @throws ServiceException wrapping any underlying <code>Exception</code>.
+   * @param message
+   *          the <code>AdaptrisMessage</code> to process.
+   * @throws ServiceException
+   *           wrapping any underlying <code>Exception</code>.
    */
   @Override
-  public void doService(AdaptrisMessage message) throws ServiceException
-  {
+  public void doService(AdaptrisMessage message) throws ServiceException {
     service.doService(message);
   }
 
-  private ResultSetTranslator resultSetTranslator()
-  {
+  private ResultSetTranslator resultSetTranslator() {
     return ObjectUtils.defaultIfNull(resultSetTranslator, new NoOpResultSetTranslator());
   }
+
 }

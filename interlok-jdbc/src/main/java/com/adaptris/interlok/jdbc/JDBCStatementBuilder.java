@@ -1,5 +1,11 @@
 package com.adaptris.interlok.jdbc;
 
+import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jdbc.JdbcService;
@@ -20,25 +26,19 @@ import com.adaptris.core.services.jdbc.TimestampStatementParameter;
 import com.adaptris.core.services.jdbc.TypedStatementParameter;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import java.text.SimpleDateFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * Base class for JDBC data statement builder services; turns the given
- * statement into the necessary query/capture service with the
+ * Base class for JDBC data statement builder services; turns the given statement into the necessary query/capture service with the
  * necessary parameter list.
  *
  * @author aanderson
  * @since 4.1.0
  */
-public abstract class JDBCStatementBuilder extends JdbcService
-{
+public abstract class JDBCStatementBuilder extends JdbcService {
   private static final String SQL_PARAMETER_REGEX = "^.*%sql_([a-z]+)\\{([a-z]+):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   private static final transient Pattern sqlParameterResolver = Pattern.compile(SQL_PARAMETER_REGEX, Pattern.DOTALL);
 
@@ -61,8 +61,7 @@ public abstract class JDBCStatementBuilder extends JdbcService
    * @throws CoreException
    */
   @Override
-  public void prepareService() throws CoreException
-  {
+  public void prepareService() throws CoreException {
     JdbcServiceWithParameters service = buildService(statement);
     log.trace("Wrapped Service : {}", DefaultMarshaller.getDefaultMarshaller().marshal(service));
     LifecycleHelper.prepare(service);
@@ -71,23 +70,20 @@ public abstract class JDBCStatementBuilder extends JdbcService
   protected abstract JdbcServiceWithParameters createService(String statement);
 
   /**
-   * Build a JDBC data query service using the given statement to
-   * create the necessary parameter list.
+   * Build a JDBC data query service using the given statement to create the necessary parameter list.
    *
-   * @param statement The SQL statement.
+   * @param statement
+   *          The SQL statement.
    *
    * @return The constructed JDBC query service.
    */
-  protected JdbcServiceWithParameters buildService(String statement) throws CoreException
-  {
-    try
-    {
+  protected JdbcServiceWithParameters buildService(String statement) throws CoreException {
+    try {
       StatementParameterList parameters = new StatementParameterList();
 
       String result = statement;
       Matcher matcher = sqlParameterResolver.matcher(statement);
-      while (matcher.matches())
-      {
+      while (matcher.matches()) {
         String from = matcher.group(1);
         String type = matcher.group(2);
         String name = matcher.group(3);
@@ -95,7 +91,7 @@ public abstract class JDBCStatementBuilder extends JdbcService
         String toReplace = "%sql_" + from + "{" + type + ":" + name + "}";
         result = result.replace(toReplace, "#" + name);
 
-        TypedStatementParameter parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
+        TypedStatementParameter<?> parameter = Type.parse(type).newInstance(statement, name, parseQueryType(from));
         parameter.setQueryString(name);
         parameters.add(parameter);
 
@@ -109,19 +105,14 @@ public abstract class JDBCStatementBuilder extends JdbcService
       service.setParameterApplicator(new NamedParameterApplicator());
       service.setConnection(getConnection());
       return service;
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
-  private static StatementParameterImpl.QueryType parseQueryType(String s)
-  {
-    for (StatementParameterImpl.QueryType q : StatementParameterImpl.QueryType.values())
-    {
-      if (q.name().equalsIgnoreCase(s))
-      {
+  private static StatementParameterImpl.QueryType parseQueryType(String s) {
+    for (StatementParameterImpl.QueryType q : StatementParameterImpl.QueryType.values()) {
+      if (q.name().equalsIgnoreCase(s)) {
         return q;
       }
     }
@@ -129,105 +120,81 @@ public abstract class JDBCStatementBuilder extends JdbcService
   }
 
   /*
-   * I wonder if these types can come from the JDBC driver or the
-   * implementations of TypedStatementParameter, instead of being
-   * hardcoded here.
+   * I wonder if these types can come from the JDBC driver or the implementations of TypedStatementParameter<?>, instead of being hardcoded
+   * here.
    */
-  private enum Type
-  {
-    STRING
-    {
+  private enum Type {
+    STRING {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new StringStatementParameter(query, queryType, false, name);
       }
     },
-    SHORT
-    {
+    SHORT {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new ShortStatementParameter(query, queryType, false, name);
       }
     },
-    INTEGER
-    {
+    INTEGER {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new IntegerStatementParameter(query, queryType, false, name);
       }
     },
-    LONG
-    {
+    LONG {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new LongStatementParameter(query, queryType, false, name);
       }
     },
-    FLOAT
-    {
+    FLOAT {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new FloatStatementParameter(query, queryType, false, name);
       }
     },
-    DOUBLE
-    {
+    DOUBLE {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new DoubleStatementParameter(query, queryType, false, name);
       }
     },
-    BOOLEAN
-    {
+    BOOLEAN {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new BooleanStatementParameter(query, queryType, false, name);
       }
     },
-    DATE
-    {
+    DATE {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new DateStatementParameter(query, queryType, false, name, DATE_FORMAT);
       }
     },
-    TIME
-    {
+    TIME {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new TimeStatementParameter(query, queryType, false, name, TIME_FORMAT);
       }
     },
-    TIMESTAMP
-    {
+    TIMESTAMP {
       @Override
-      TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType)
-      {
+      TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType) {
         return new TimestampStatementParameter(query, queryType, false, name, TIMESTAMP_FORMAT);
       }
     };
 
-    abstract TypedStatementParameter newInstance(String query, String name, StatementParameterImpl.QueryType queryType);
+    abstract TypedStatementParameter<?> newInstance(String query, String name, StatementParameterImpl.QueryType queryType);
 
-    public static Type parse(String s)
-    {
-      for (Type t : Type.values())
-      {
-        if (t.name().equalsIgnoreCase(s))
-        {
+    public static Type parse(String s) {
+      for (Type t : Type.values()) {
+        if (t.name().equalsIgnoreCase(s)) {
           return t;
         }
       }
       return null;
     }
   }
+
 }
