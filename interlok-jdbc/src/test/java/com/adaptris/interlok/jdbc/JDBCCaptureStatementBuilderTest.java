@@ -1,5 +1,11 @@
 package com.adaptris.interlok.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.reflect.Field;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.services.jdbc.BooleanStatementParameter;
 import com.adaptris.core.services.jdbc.DateStatementParameter;
 import com.adaptris.core.services.jdbc.DoubleStatementParameter;
@@ -12,29 +18,23 @@ import com.adaptris.core.services.jdbc.StringStatementParameter;
 import com.adaptris.core.services.jdbc.TimeStatementParameter;
 import com.adaptris.core.services.jdbc.TimestampStatementParameter;
 import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
-import org.junit.Test;
 
-import java.lang.reflect.Field;
-
-import static org.junit.Assert.assertEquals;
-
-public class JDBCCaptureStatementBuilderTest extends JDBCStatementBuilderCase
-{
+public class JDBCCaptureStatementBuilderTest extends JDBCStatementBuilderCase {
+  
   @Test
-  public void testCreateService() throws Exception
-  {
+  public void testCreateService() throws Exception {
     JDBCCaptureStatementBuilder service = new JDBCCaptureStatementBuilder();
     service.setStatement("INSERT INTO everything (b, s, i, l, f, d, r, t, a, m) VALUES (" +
-            "%sql_metadata{boolean:b}, " +
-            "%sql_metadata{short:s}, " +
-            "%sql_metadata{integer:i}, " +
-            "%sql_metadata{long:l}, " +
-            "%sql_metadata{float:f}, " +
-            "%sql_metadata{double:d}, " +
-            "%sql_metadata{string:r}, " +
-            "%sql_metadata{time:t}, " +
-            "%sql_metadata{date:a}, " +
-            "%sql_metadata{timestamp:m})");
+        "%sql_metadata{boolean:b}, " +
+        "%sql_metadata{short:s}, " +
+        "%sql_metadata{integer:i}, " +
+        "%sql_metadata{long:l}, " +
+        "%sql_metadata{float:f}, " +
+        "%sql_metadata{double:d}, " +
+        "%sql_metadata{string:r}, " +
+        "%sql_metadata{time:t}, " +
+        "%sql_metadata{date:a}, " +
+        "%sql_metadata{timestamp:m})");
     service.prepare();
 
     JdbcRawDataCaptureService queryService = getQueryService(service);
@@ -51,36 +51,27 @@ public class JDBCCaptureStatementBuilderTest extends JDBCStatementBuilderCase
     assertEquals(TimestampStatementParameter.class, parameters.getParameterByName("m").getClass());
   }
 
-  private static JdbcRawDataCaptureService getQueryService(JDBCCaptureStatementBuilder service) throws Exception
-  {
-    Class c = JDBCCaptureStatementBuilder.class;
+  private static JdbcRawDataCaptureService getQueryService(JDBCCaptureStatementBuilder service) throws Exception {
+    Class<?> c = JDBCCaptureStatementBuilder.class;
     Field f = c.getDeclaredField("service");
     f.setAccessible(true);
-    return (JdbcRawDataCaptureService)f.get(service);
+    return (JdbcRawDataCaptureService) f.get(service);
   }
 
-  protected static JDBCCaptureStatementBuilder getService()
-  {
-    try
-    {
+  protected static JDBCCaptureStatementBuilder getService() {
+    try {
       JDBCCaptureStatementBuilder service = new JDBCCaptureStatementBuilder();
-      service.setStatement("INSERT INTO person (id, name, dob, age) VALUES (" +
-              "%sql_id{string:id}, " +
-              "%sql_payload{string:name}, " +
-              "%sql_metadata{date:dob}, " +
-              "%sql_metadata{integer:age})");
+      service.setStatement("INSERT INTO person (id, name, dob, age) VALUES (" + "%sql_id{string:id}, " + "%sql_payload{string:name}, "
+          + "%sql_metadata{date:dob}, " + "%sql_metadata{integer:age})");
       service.prepare();
       return service;
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       return null;
     }
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig()
-  {
+  protected Object retrieveObjectForSampleConfig() {
     return getService();
   }
 }
