@@ -7,7 +7,7 @@ ext {
 dependencies {
   api ("org.codehaus.staxmate:stax2:2.1")
   api ("com.google.guava:guava:33.4.0-jre")
-  api ("commons-codec:commons-codec:1.17.1")
+  api ("commons-codec:commons-codec:1.18.0")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
